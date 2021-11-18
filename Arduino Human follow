@@ -1,4 +1,5 @@
-*/The human following mode bases the performance of the task on the ultrasonic sensor, 
+/*
+The human following mode bases the performance of the task on the ultrasonic sensor, 
 which can sense the presence of a human and follow or avoid it based on the coded instruction.
 */
 
