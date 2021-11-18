@@ -1,0 +1,227 @@
+/*
+car mp3 remote controller code
+*/
+
+#include <IRremote.h>
+
+
+#define CH 0XFF629D  // FORWARD
+#define VOL+ 0xFFA857  // BACK  
+#define CH- 0xFFA25D  // LEFT
+#define CH+ 0xFFE21D // RIGHT
+#define EQ 0xFF906F  // STOP
+#define UNKNOWN_CH 0XFF629D    // FORWARD
+#define UNKNOWN_VOL+ 0xFFA857   // BACK
+#define UNKNOWN_CH- 0xFFA25D  // LEFT
+#define UNKNOWN_CH+ 0xFFE21D   // RIGHT
+#define UNKNOWN_EQ 0xFF906F  // STOP
+#define KEY1 0xFF30CF
+#define KEY2 0xFF18E7
+#define KEY3 0xFF7A85
+#define KEY4 0xFF10EF
+#define KEY5 0xFF38C7
+#define KEY6 0xFF5AA5
+#define KEY7 0xFF42BD
+#define KEY8 0xFF4AB5
+#define KEY9 0xFF52AD
+#define KEY0 0xFF6897
+#define PLAY/PAUSE  0xFFC23D
+#define EQ 0xFF906F
+
+int RECV_PIN = 12;
+// connections for drive Motor FR & BR
+int enA = 9;
+int in1 = 8;
+int in2 = 7;
+// connections for drive Motor FL & BL
+int in3 = 5;
+int in4 = 4;
+int enB = 3;
+
+IRrecv irrecv(RECV_PIN);
+decode_results results;
+int valSpeed = 0;
+unsigned long val;
+
+void setup() {                
+  // initialize the digital pin as an output.
+  pinMode(RECV_PIN, INPUT);  
+  pinMode(enA, OUTPUT);
+  pinMode(enB, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+  irrecv.enableIRIn(); // Start the receiver
+  Serial.begin(9600);
+
+  // Set the speed to start, from 25.5 (off) to 255 (max speed)
+  analogWrite(enA, valSpeed);
+  analogWrite(enB, valSpeed);
+  
+  // Turn off motors - Initial state
+  analogWrite(in1, LOW);
+  analogWrite(in2, LOW);
+  analogWrite(in3, LOW);
+  analogWrite(in4, LOW);
+
+}
+
+void loop() {
+  int i=0;
+   if (irrecv.decode(&results)) {
+
+    
+   translateIR();
+    
+     irrecv.resume(); // Receive the next value
+     Serial.println(val);
+     val = results.value;
+    
+   }   
+   
+ }
+
+ // takes action based on IR code received describing Car MP3 IR codes 
+
+ void translateIR(){    
+  switch(results.value){
+  case 0xFFA25D:  
+    Serial.println(" CH- ");  //turn left
+    SetSpeed(180, 0);
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);
+    break;
+  case 0xFF629D:  
+    Serial.println(" CH ");  //move forward
+    SetSpeed(255, 255);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH); 
+    break;
+  case 0xFFE21D:  
+    Serial.println(" CH+ "); //turn right
+    SetSpeed(180, 0);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW); 
+    break;
+  case 0xFFA857:  
+    Serial.println(" VOL+ "); //move backward
+    SetSpeed(255,255);
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+    break;
+  case 0xFFE01F:  
+    Serial.println(" VOL- "); //forward left
+    SetSpeed(128, 255);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);
+    break;
+  case 0xFFC23D: 
+    Serial.println(" PLAY/PAUSE "); //forward right
+    SetSpeed(255, 128);
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);
+    break;
+  case 0xFF9867:  
+    Serial.println(" 100+ "); //backward left
+    SetSpeed(128, 255);
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+    break;
+  case 0xFFB04F:  
+    Serial.println(" 200+ "); //backward right
+    SetSpeed(255, 128);
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+    break;
+  case 0xFF906F:  
+    Serial.println(" EQ "); //stop
+    stop();
+    break;
+// keys for Car Speed
+  case 0xFF6897:  
+    Serial.println(" 0 "); 
+    SetSpeed(25.5, 25.5);
+    break;
+  case 0xFF30CF:  
+    Serial.println(" 1 ");
+    SetSpeed(51, 51); 
+    break;
+
+  case 0xFF18E7:  
+    Serial.println(" 2  ");
+    SetSpeed(76.5, 76.5); 
+    break;
+
+  case 0xFF7A85:  
+    Serial.println(" 3  "); 
+    SetSpeed(102, 102);
+    break;
+
+  case 0xFF10EF:  
+    Serial.println(" 4 "); 
+    SetSpeed(127.5, 127.5);
+    break;
+
+  case 0xFF38C7:  
+    Serial.println(" 5  "); 
+    SetSpeed(153, 153);    
+    break;
+
+  case 0xFF5AA5:  
+    Serial.println(" 6 "); 
+    SetSpeed(178.5, 178.5);
+    break;
+
+  case 0xFF42BD:  
+    Serial.println(" 7  "); 
+    SetSpeed(204, 204);
+    break;
+
+  case 0xFF4AB5:  
+    Serial.println(" 8  ");
+    SetSpeed(229.5, 229.5); 
+    break;
+
+  case 0xFF52AD:  
+    Serial.println(" 9  "); 
+    SetSpeed(255, 255);
+    break;
+   
+    Serial.println(results.value, HEX);
+
+  }
+  
+}
+
+// function for setting speed of motors
+void SetSpeed(int val1, int val2){
+  int valSpeed1, valSpeed2;
+  valSpeed1 = val1;
+  valSpeed2 = val2;
+  analogWrite(enA, valSpeed1);
+  analogWrite(enB, valSpeed2);
+}
+
+void stop(){
+  digitalWrite(enA, LOW);
+  digitalWrite(enB, LOW);
+  Serial.println("STOP!");  
+}
+                  
