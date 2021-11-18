@@ -1,0 +1,78 @@
+*/The principle of the line following mode is that When both wheels spin, 
+the robot drives forward. When the left sensor sees a dark surface, 
+the left wheel stops and the right wheel keeps spinning, 
+so the robot turns left (and vice versa for the right sensor). 
+That means the robot can follow a line.
+*//
+
+
+
+int ENA = 9;  
+int IN1 = 8; 
+int IN2 = 7; 
+int IN3 = 5; 
+int IN4 = 4; 
+int ENB = 3;  
+
+int R_S = A3; //R sensor
+int C_S = A2; //C sensor
+int L_S = A4; //L sensor
+
+void setup() 
+{
+pinMode(IN3, OUTPUT);
+pinMode(IN4, OUTPUT);
+pinMode(IN1, OUTPUT);
+pinMode(IN2, OUTPUT);
+pinMode(ENB, OUTPUT);
+pinMode(ENA, OUTPUT);
+
+pinMode(L_S, INPUT);
+pinMode(C_S, INPUT);
+pinMode(R_S, INPUT);
+
+analogWrite(ENA, 250); 
+analogWrite(ENB, 250); 
+delay(200);
+}
+void loop()
+{  
+if ((digitalRead(L_S) == 0)&&(digitalRead(C_S) == 1)&&(digitalRead(R_S) == 0)){forword();}
+
+if ((digitalRead(L_S) == 1)&&(digitalRead(C_S) == 1)&&(digitalRead(R_S) == 0)){turnLeft();}
+if ((digitalRead(L_S) == 1)&&(digitalRead(C_S) ==0)&&(digitalRead(R_S) == 0)) {turnLeft();}
+
+if ((digitalRead(L_S) == 0)&&(digitalRead(C_S) == 1)&&(digitalRead(R_S) == 1)){turnRight();}
+if ((digitalRead(L_S) == 0)&&(digitalRead(C_S) == 0)&&(digitalRead(R_S) == 1)){turnRight();}
+
+if ((digitalRead(L_S) == 1)&&(digitalRead(C_S) == 1)&&(digitalRead(R_S) == 1)){Stop();}
+}
+
+void forword(){
+digitalWrite(IN1, LOW);
+digitalWrite(IN2, HIGH);
+digitalWrite(IN3, LOW);
+digitalWrite(IN4, HIGH);  
+}
+
+
+void turnRight(){
+digitalWrite(IN1, LOW);
+digitalWrite(IN2, HIGH);
+digitalWrite(IN3, HIGH);
+digitalWrite(IN4, LOW);  
+}
+
+void turnLeft(){
+digitalWrite(IN1, HIGH);
+digitalWrite(IN2, LOW);
+digitalWrite(IN3, LOW);
+digitalWrite(IN4, HIGH);
+}
+
+void Stop(){
+digitalWrite(IN1, LOW);
+digitalWrite(IN2, LOW);
+digitalWrite(IN3, LOW);
+digitalWrite(IN4, LOW);
+}
