@@ -1,0 +1,102 @@
+
+#include <Servo.h>
+
+const int trigPin = A1 ; //Servo trig pin to A1
+const int echoPin = A0; // Servo echo pin to A0
+const int in1 = 8; // Motor driver pin
+const int in2 = 7; 
+const int in3 = 5;
+const int in4 = 4;
+const int enA = 9;
+const int enB = 3;
+#define motorArpm 255 // Default speed for "enA". you can change this speed from 0 to 255
+#define motorBrpm 255 // Default speed for "enB". you can change this speed from 0 to 255
+
+Servo servo_motor; //Servo
+int pos =0;
+
+void setup(){
+  Serial.begin(9600);
+servo_motor.attach(11); //Servo signal pin to 11
+
+{
+  for(pos = 90; pos <= 180; pos += 1){
+  servo_motor.write(pos);
+  delay(15);
+} for(pos = 180; pos >= 0; pos-= 1) {
+  servo_motor.write(pos);
+  delay(15);
+}for(pos = 0; pos<=90; pos += 1) {
+  servo_motor.write(pos);
+  delay(15);
+}
+
+  pinMode (trigPin, OUTPUT);
+  pinMode (echoPin, INPUT);
+  pinMode (in1, OUTPUT);
+  pinMode (in2, OUTPUT);
+  pinMode (in3, OUTPUT);
+  pinMode (in4, OUTPUT);
+  pinMode (enA, OUTPUT);
+  pinMode (enB, OUTPUT);
+}
+}
+long duration;
+int distance;
+
+void loop(){
+  digitalWrite(trigPin , HIGH);
+  delayMicroseconds(1000);
+  digitalWrite(trigPin , LOW);
+
+  duration = pulseIn(echoPin , HIGH);
+  distance = (duration/2) / 28.5;
+
+  if(distance < 15) // It will go Backward if distance is less than 15.
+  {
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    analogWrite(enA, motorArpm);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+    analogWrite(enB, motorBrpm);
+  }
+  if(distance >50) // It will Stop if distance is More than 50.
+  {
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, LOW);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, LOW);
+    analogWrite(enA, 0);
+    analogWrite(enB, 0);
+  }
+
+  if(distance > 15 && distance < 50){ // to turn Forward
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    analogWrite(enA, motorArpm);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);
+    analogWrite(enB, motorBrpm);
+  }
+  
+  if(distance > 20 && distance < 30)// to turn left
+  {
+    digitalWrite(in1, HIGH);
+    digitalWrite(in2, LOW);
+    analogWrite(enA, 180);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);
+    analogWrite(enB, 0);
+  }
+
+  if(distance > 30 && distance <40 ) // to turn Right
+  {
+    digitalWrite(in1, LOW);
+    digitalWrite(in2, HIGH);
+    analogWrite(enA, 0);
+    digitalWrite(in3, HIGH);
+    digitalWrite(in4, LOW);
+    analogWrite(enB, 180);
+  }
+}
