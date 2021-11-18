@@ -1,5 +1,8 @@
 /*
-car mp3 remote controller code
+car mp3 remote controller code. In case we do not have a set path or a specific task for the robot to perform, 
+it is important for us to be able to control it, 
+and the remote controlled mode is the best way to do it as in that case we are able to control everything about the car’s movement including the speed and direction.
+
 */
 
 #include <IRremote.h>
