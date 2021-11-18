@@ -3,7 +3,7 @@ the robot drives forward. When the left sensor sees a dark surface,
 the left wheel stops and the right wheel keeps spinning, 
 so the robot turns left (and vice versa for the right sensor). 
 That means the robot can follow a line.
-*//
+*/
 
 
 
